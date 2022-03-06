@@ -2,8 +2,6 @@
 
 template class FSElasticityFEM<3>;
 
-
-
 template<unsigned int dim>
 inline void FSElasticityFEM<dim>::generate_mesh()
 {

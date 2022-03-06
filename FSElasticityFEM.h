@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <Eigen/Dense>
 #include "FEMUtility.h"
 
 // Finite Strain Elasticity Finite Element Method Class
