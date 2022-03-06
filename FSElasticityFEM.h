@@ -24,6 +24,8 @@ private:
                                   Eigen::MatrixXd& S_pk2);
     void compute_quad_res(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& S_pk2,
                           double det_jac, Eigen::MatrixXd& Rq);
+    void compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& S_pk2,
+                            double det_jac, Eigen::MatrixXd& Kjq);
 
 private:
     Eigen::VectorXd d;
@@ -31,4 +33,6 @@ private:
 
     Eigen::VectorXd R;
     Eigen::VectorXd Rd;
+
+    Eigen::MatrixXd Kj;
 };
