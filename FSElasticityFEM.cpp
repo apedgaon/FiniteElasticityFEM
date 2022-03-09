@@ -143,19 +143,27 @@ void FSElasticityFEM<dim>::compute_quad_deformation(Eigen::VectorXd& de, Eigen::
     dfgrd = del + ugrd;
     E_gl = 0.5 * (dfgrd.transpose() * dfgrd - del);
 
-    // Compute PK2 Stress
-    S_pk2 = Eigen::MatrixXd::Zero(dim, dim);
+    // Compute PK2 Stress using St. Venant Kirchoff Relations
+    double tr_E_gl = E_gl.trace();
     for (unsigned int jdim = 0; jdim < dim; ++jdim)
     {
         for (unsigned int idim = 0; idim < dim; ++idim)
-        {
-            for (unsigned int ldim = 0; ldim < dim; ++ldim)
-            {
-                for (unsigned int kdim = 0; kdim < dim; ++kdim)
-                    S_pk2(idim, jdim) += mat.C[idim][jdim][kdim][ldim] * E_gl(kdim, ldim);
-            }
-        }
+            S_pk2(idim, jdim) = 2 * mat.mu * E_gl(idim, jdim) + mat.lambda * del(idim, jdim) * tr_E_gl;
     }
+
+    // Alternate way by C_ijkl E_kl
+    //S_pk2 = Eigen::MatrixXd::Zero(dim, dim);
+    //for (unsigned int jdim = 0; jdim < dim; ++jdim)
+    //{
+    //    for (unsigned int idim = 0; idim < dim; ++idim)
+    //    {
+    //        for (unsigned int ldim = 0; ldim < dim; ++ldim)
+    //        {
+    //            for (unsigned int kdim = 0; kdim < dim; ++kdim)
+    //                S_pk2(idim, jdim) += mat.C[idim][jdim][kdim][ldim] * E_gl(kdim, ldim);
+    //        }
+    //    }
+    //}
 }
 
 template<unsigned int dim>
@@ -186,6 +194,7 @@ void FSElasticityFEM<dim>::compute_quad_res(unsigned int iq, Eigen::MatrixXd& dN
     // Contribuitions from tractions (Not implemented)
     Eigen::VectorXd sq = Eigen::VectorXd::Zero(loc_dofs);
 
+    // Total Residual
     Rq = rq - sq;
 }
 
