@@ -145,6 +145,7 @@ void FSElasticityFEM<dim>::compute_quad_deformation(Eigen::VectorXd& de, Eigen::
 
     // Compute PK2 Stress using St. Venant Kirchoff Relations
     double tr_E_gl = E_gl.trace();
+    S_pk2.resize(dim, dim);
     for (unsigned int jdim = 0; jdim < dim; ++jdim)
     {
         for (unsigned int idim = 0; idim < dim; ++idim)
