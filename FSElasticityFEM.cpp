@@ -8,7 +8,6 @@ inline void FSElasticityFEM<dim>::generate_mesh()
     mesh.generate(geom);
 }
 
-
 template<unsigned int dim>
 void FSElasticityFEM<dim>::assemble()
 {

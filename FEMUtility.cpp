@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iomanip>
 #include "FEMUtility.h"
 
 template class Mesh<3>;
@@ -414,5 +416,16 @@ void Material::init_elasticity_tensor()
                 }
             }
         }
+    }
+}
+
+
+void print_mat(Eigen::MatrixXd& A, std::string filename)
+{
+    std::ofstream write_stream(filename.c_str());
+    if (write_stream.is_open())
+    {
+        write_stream << std::setprecision(16) << A;
+        write_stream.close();
     }
 }
