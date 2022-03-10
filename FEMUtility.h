@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <vector>
+#include <string>
 #include <Eigen/Dense>
 
 class LinearLagrange
