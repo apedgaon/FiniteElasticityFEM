@@ -18,13 +18,6 @@ void FSElasticityFEM<dim>::assemble()
     R = Eigen::VectorXd::Zero(num_dofs);
     Kj = Eigen::MatrixXd::Zero(num_dofs, num_dofs);
 
-    d = Eigen::VectorXd::Zero(num_dofs);
-    for (auto& dirBC : dirBCs)
-    {
-        unsigned gidx = dirBC.node * dim + dirBC.dof;
-        d(gidx) = dirBC.val;
-    }
-
     // Element Loop
     for (auto& conn : mesh.elem_conn)
     {
@@ -82,6 +75,22 @@ template<unsigned int dim>
 void FSElasticityFEM<dim>::solve()
 {
     create_dirichlet_map();
+
+    d = Eigen::VectorXd::Zero(gDofs);
+    for (auto& dirBC : dirBCs)
+    {
+        unsigned gidx = dirBC.node * dim + dirBC.dof;
+        d(gidx) = dirBC.val;
+    }
+
+    dd.resize(ucDofs);
+    Rd.resize(ucDofs);
+    Kjd.resize(ucDofs, ucDofs);
+
+    // NR iterations
+    assemble();
+    apply_dirichlet_BC();
+    Eigen::MatrixXd delta_d = Kjd.ldlt().solve(-Rd);
 }
 
 template<unsigned int dim>
@@ -276,9 +285,9 @@ template<unsigned int dim>
 void FSElasticityFEM<dim>::create_dirichlet_map()
 {
     // dirBCs should be sorted
-    unsigned int dofs = dim * mesh.Nnd;
+    gDofs = dim * mesh.Nnd;
     unsigned int dirBCsize = static_cast<unsigned int>(dirBCs.size());
-    ucDofs = dofs - dirBCsize;       // unconstrained dofs
+    ucDofs = gDofs - dirBCsize;       // unconstrained dofs
     dirmap.reserve(ucDofs);
     unsigned int offset = 0;
     auto dir_itr = dirBCs.begin();
@@ -297,5 +306,17 @@ void FSElasticityFEM<dim>::create_dirichlet_map()
 
             dirmap.push_back(dim * idx + idim);
         }
+    }
+}
+
+template<unsigned int dim>
+void FSElasticityFEM<dim>::apply_dirichlet_BC()
+{
+    for (unsigned int jdx = 0; jdx < ucDofs; ++jdx)
+    {
+        for (unsigned int idx = 0; idx < ucDofs; ++idx)
+            Kjd(idx, jdx) = Kj(dirmap[idx], dirmap[jdx]);
+
+        Rd(jdx) = R(dirmap[jdx]);
     }
 }

@@ -16,9 +16,9 @@ void Problem1()
     fem.mesh.mesh_type = MeshType::hexahedral;
     fem.mesh.quadrature_type = QuadratureType::two_point;
     fem.mesh.shp_func_type = ShapeFcnType::lagrange_linear;
-    fem.mesh.divs[0] = 10;
-    fem.mesh.divs[1] = 3;
-    fem.mesh.divs[2] = 3;
+    fem.mesh.divs[0] = 2;
+    fem.mesh.divs[1] = 2;
+    fem.mesh.divs[2] = 2;
 
     fem.generate_mesh();
     for (unsigned int idx = 0; idx < fem.mesh.Nnd; ++idx)

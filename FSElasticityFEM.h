@@ -28,6 +28,7 @@ private:
     void compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& S_pk2,
                             double det_jac, Eigen::MatrixXd& Kjq);
     void create_dirichlet_map();
+    void apply_dirichlet_BC();
 
 private:
     Eigen::VectorXd d;
@@ -37,7 +38,9 @@ private:
     Eigen::VectorXd Rd;
 
     Eigen::MatrixXd Kj;
+    Eigen::MatrixXd Kjd;
 
+    unsigned int gDofs;
     unsigned int ucDofs;
     std::vector<unsigned int> dirmap;
 };
