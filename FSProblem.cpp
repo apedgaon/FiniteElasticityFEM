@@ -59,7 +59,7 @@ void Problem1()
         }
     }
 
-    fem.assemble();
+    fem.solve();
 }
 
 int main(int argc, char* argv[])

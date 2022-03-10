@@ -79,6 +79,12 @@ void FSElasticityFEM<dim>::assemble()
 }
 
 template<unsigned int dim>
+void FSElasticityFEM<dim>::solve()
+{
+    create_dirichlet_map();
+}
+
+template<unsigned int dim>
 void FSElasticityFEM<dim>::compute_elem_quantities(connectivity& conn, Eigen::VectorXui& gidx,
                                                    Eigen::MatrixXd& xe, Eigen::VectorXd& de)
 {
@@ -264,4 +270,32 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
 
     // Compute system total stiffness
     Kjq = Kg + Km;
+}
+
+template<unsigned int dim>
+void FSElasticityFEM<dim>::create_dirichlet_map()
+{
+    // dirBCs should be sorted
+    unsigned int dofs = dim * mesh.Nnd;
+    unsigned int dirBCsize = static_cast<unsigned int>(dirBCs.size());
+    ucDofs = dofs - dirBCsize;       // unconstrained dofs
+    dirmap.reserve(ucDofs);
+    unsigned int offset = 0;
+    auto dir_itr = dirBCs.begin();
+    for (unsigned int idx = 0; idx < mesh.Nnd; ++idx)
+    {
+        for (unsigned int idim = 0; idim < dim; ++idim)
+        {
+            if (dir_itr != dirBCs.end())
+            {
+                if (idx == dir_itr->node && idim == dir_itr->dof)
+                {
+                    ++dir_itr;
+                    continue;
+                }
+            }
+
+            dirmap.push_back(dim * idx + idim);
+        }
+    }
 }
