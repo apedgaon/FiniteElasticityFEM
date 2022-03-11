@@ -124,8 +124,8 @@ public:
 struct SolverControls
 {
     AnalysisType antype;
-    double nsteps;
-    double ninc_max;
+    unsigned int nsteps;
+    unsigned int ninc_max;
     double nr_tol;
 };
 
