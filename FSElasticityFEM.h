@@ -17,6 +17,7 @@ public:
     Material mat;
     Mesh<dim> mesh;
     std::vector<DirichletBC> dirBCs;
+    SolverControls sol_ctrls;
 
 private:
     void compute_elem_quantities(connectivity& conn, Eigen::VectorXui& gidx, Eigen::MatrixXd& xe, Eigen::VectorXd& de);
@@ -29,6 +30,7 @@ private:
     void compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& S_pk2,
                             double det_jac, Eigen::MatrixXd& Kjq);
     void create_dirichlet_map();
+    void apply_step_BC(double step_mult);
     void apply_dirichlet_BC();
     void check_convergence(unsigned int nr_iter, bool& converged);
     void reform_full_sol();

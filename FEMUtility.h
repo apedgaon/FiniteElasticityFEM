@@ -121,4 +121,11 @@ public:
     std::vector<connectivity> elem_conn;
 };
 
+struct SolverControls
+{
+    AnalysisType antype;
+    double nsteps;
+    double ninc_max;
+};
+
 void print_mat(Eigen::MatrixXd& A, std::string filename);

@@ -59,6 +59,10 @@ void Problem1()
         }
     }
 
+    fem.sol_ctrls.antype = AnalysisType::_static;
+    fem.sol_ctrls.nsteps = 5;
+    fem.sol_ctrls.ninc_max = 10;
+
     fem.initialize();
     fem.solve();
 }

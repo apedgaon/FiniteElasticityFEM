@@ -15,12 +15,6 @@ void FSElasticityFEM<dim>::initialize()
     create_dirichlet_map();
 
     d = Eigen::VectorXd::Zero(gDofs);
-    for (auto& dirBC : dirBCs)
-    {
-        unsigned gidx = dirBC.node * dim + dirBC.dof;
-        d(gidx) = dirBC.val;
-    }
-
     dd.resize(ucDofs);
     Rd.resize(ucDofs);
     Kjd.resize(ucDofs, ucDofs);
@@ -91,23 +85,38 @@ template<unsigned int dim>
 void FSElasticityFEM<dim>::solve()
 {
     Eigen::VectorXd delta_d(ucDofs);
-    bool converged;
 
-    // NR iterations
-    for (unsigned int nr_iter = 0; nr_iter < 15; ++nr_iter)
+    for (unsigned int istep = 0; istep < sol_ctrls.nsteps; ++istep)
     {
-        assemble();
-        apply_dirichlet_BC();
-        check_convergence(nr_iter, converged);
-        if (converged)
-            return;
+        std::cout << "\n";
+        std::cout << "Load Step = " << istep + 1 << "\n";
+        bool converged = false;
+        double step_mult = 1.0 * (istep + 1) / sol_ctrls.nsteps;
+        apply_step_BC(step_mult);
 
-        delta_d = Kjd.ldlt().solve(-Rd);
-        dd += delta_d;
-        reform_full_sol();
+        // NR iterations
+        for (unsigned int inc = 0; inc < sol_ctrls.ninc_max; ++inc)
+        {
+            assemble();
+            apply_dirichlet_BC();
+            check_convergence(inc, converged);
+            if (converged)
+                break;
+
+            delta_d = Kjd.ldlt().solve(-Rd);
+            dd += delta_d;
+            reform_full_sol();
+        }
+
+        if (!converged)
+        {
+            std::cout << "*** Convergence Failed in max NR iterations!\n"
+                << "*** Analysis Incomplete!\n";
+            return;
+        }
     }
 
-    std::cout << "Convergence Failed. Reduce load step!\n";
+    std::cout << "\n*** Analysis Complete!\n";
 }
 
 template<unsigned int dim>
@@ -327,6 +336,16 @@ void FSElasticityFEM<dim>::create_dirichlet_map()
 }
 
 template<unsigned int dim>
+void FSElasticityFEM<dim>::apply_step_BC(double step_mult)
+{
+    for (auto& dirBC : dirBCs)
+    {
+        unsigned gidx = dirBC.node * dim + dirBC.dof;
+        d(gidx) = dirBC.val * step_mult;
+    }
+}
+
+template<unsigned int dim>
 void FSElasticityFEM<dim>::apply_dirichlet_BC()
 {
     for (unsigned int jdx = 0; jdx < ucDofs; ++jdx)
@@ -348,7 +367,7 @@ void FSElasticityFEM<dim>::check_convergence(unsigned int nr_iter, bool& converg
     if (norm_res < 1.0e-8)
     {
         converged = true;
-        std::cout << "Convergence Successful!\n";
+        std::cout << "*** Convergence Successful!\n";
     }
 }
 
