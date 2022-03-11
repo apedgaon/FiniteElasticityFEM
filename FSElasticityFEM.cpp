@@ -363,8 +363,8 @@ void FSElasticityFEM<dim>::check_convergence(unsigned int nr_iter, bool& converg
     converged = false;
     double norm_res = Rd.norm();
     std::cout << "NR iteration number = " << nr_iter + 1 << "\n";
-    std::cout << "Residual = " << norm_res << "\n";
-    if (norm_res < 1.0e-8)
+    std::cout << "Residual norm = " << norm_res << "\n";
+    if (norm_res < sol_ctrls.nr_tol)
     {
         converged = true;
         std::cout << "*** Convergence Successful!\n";

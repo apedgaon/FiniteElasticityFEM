@@ -126,6 +126,7 @@ struct SolverControls
     AnalysisType antype;
     double nsteps;
     double ninc_max;
+    double nr_tol;
 };
 
 void print_mat(Eigen::MatrixXd& A, std::string filename);
