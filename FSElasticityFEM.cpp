@@ -1,3 +1,4 @@
+#include <iostream>
 #include "FSElasticityFEM.h"
 
 template class FSElasticityFEM<3>;
@@ -93,11 +94,16 @@ void FSElasticityFEM<dim>::solve()
     double norm_res;
 
     // NR iterations
-    for (unsigned int nr_idx = 0; nr_idx < 6; ++nr_idx)
+    for (unsigned int nr_idx = 0; nr_idx < 15; ++nr_idx)
     {
         assemble();
         apply_dirichlet_BC();
         norm_res = Rd.norm();
+        std::cout << "NR iteration number = " << nr_idx + 1 << "\n";
+        std::cout << "Residual = " << norm_res << "\n";
+        if (norm_res < 1.0e-8)
+            return;
+
         delta_d = Kjd.ldlt().solve(-Rd);
         dd += delta_d;
         reform_full_sol();
