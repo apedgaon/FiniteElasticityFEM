@@ -59,6 +59,7 @@ void Problem1()
         }
     }
 
+    fem.initialize();
     fem.solve();
 }
 

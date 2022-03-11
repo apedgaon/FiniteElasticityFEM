@@ -9,13 +9,31 @@ inline void FSElasticityFEM<dim>::generate_mesh()
 }
 
 template<unsigned int dim>
+void FSElasticityFEM<dim>::initialize()
+{
+    create_dirichlet_map();
+
+    d = Eigen::VectorXd::Zero(gDofs);
+    for (auto& dirBC : dirBCs)
+    {
+        unsigned gidx = dirBC.node * dim + dirBC.dof;
+        d(gidx) = dirBC.val;
+    }
+
+    dd.resize(ucDofs);
+    Rd.resize(ucDofs);
+    Kjd.resize(ucDofs, ucDofs);
+
+    for (unsigned int idx = 0; idx < ucDofs; ++idx)
+        dd(idx) = d(dirmap[idx]);
+}
+
+template<unsigned int dim>
 void FSElasticityFEM<dim>::assemble()
 {
-    // Initialize
-    unsigned int num_dofs = mesh.Nnd * dim;
+    R = Eigen::VectorXd::Zero(gDofs);
+    Kj = Eigen::MatrixXd::Zero(gDofs, gDofs);
     unsigned int loc_dofs = mesh.Nen * dim;
-    R = Eigen::VectorXd::Zero(num_dofs);
-    Kj = Eigen::MatrixXd::Zero(num_dofs, num_dofs);
 
     // Element Loop
     for (auto& conn : mesh.elem_conn)
@@ -66,30 +84,24 @@ void FSElasticityFEM<dim>::assemble()
             }
         }
     }
-
-    auto bb = R.norm();
 }
 
 template<unsigned int dim>
 void FSElasticityFEM<dim>::solve()
 {
-    create_dirichlet_map();
-
-    d = Eigen::VectorXd::Zero(gDofs);
-    for (auto& dirBC : dirBCs)
-    {
-        unsigned gidx = dirBC.node * dim + dirBC.dof;
-        d(gidx) = dirBC.val;
-    }
-
-    dd.resize(ucDofs);
-    Rd.resize(ucDofs);
-    Kjd.resize(ucDofs, ucDofs);
+    Eigen::VectorXd delta_d(ucDofs);
+    double norm_res;
 
     // NR iterations
-    assemble();
-    apply_dirichlet_BC();
-    Eigen::MatrixXd delta_d = Kjd.ldlt().solve(-Rd);
+    for (unsigned int nr_idx = 0; nr_idx < 6; ++nr_idx)
+    {
+        assemble();
+        apply_dirichlet_BC();
+        norm_res = Rd.norm();
+        delta_d = Kjd.ldlt().solve(-Rd);
+        dd += delta_d;
+        reform_full_sol();
+    }
 }
 
 template<unsigned int dim>
@@ -318,4 +330,11 @@ void FSElasticityFEM<dim>::apply_dirichlet_BC()
 
         Rd(jdx) = R(dirmap[jdx]);
     }
+}
+
+template<unsigned int dim>
+void FSElasticityFEM<dim>::reform_full_sol()
+{
+    for (unsigned int idx = 0; idx < ucDofs; ++idx)
+        d(dirmap[idx]) = dd(idx);
 }

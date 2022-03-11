@@ -9,6 +9,7 @@ class FSElasticityFEM
 {
 public:
     void generate_mesh();
+    void initialize();
     void assemble();
     void solve();
 
@@ -29,6 +30,7 @@ private:
                             double det_jac, Eigen::MatrixXd& Kjq);
     void create_dirichlet_map();
     void apply_dirichlet_BC();
+    void reform_full_sol();
 
 private:
     Eigen::VectorXd d;
