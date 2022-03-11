@@ -12,6 +12,7 @@ public:
     void initialize();
     void assemble();
     void solve();
+    void post_print();
 
     Geometry<dim> geom;
     Material mat;
