@@ -91,23 +91,23 @@ template<unsigned int dim>
 void FSElasticityFEM<dim>::solve()
 {
     Eigen::VectorXd delta_d(ucDofs);
-    double norm_res;
+    bool converged;
 
     // NR iterations
-    for (unsigned int nr_idx = 0; nr_idx < 15; ++nr_idx)
+    for (unsigned int nr_iter = 0; nr_iter < 15; ++nr_iter)
     {
         assemble();
         apply_dirichlet_BC();
-        norm_res = Rd.norm();
-        std::cout << "NR iteration number = " << nr_idx + 1 << "\n";
-        std::cout << "Residual = " << norm_res << "\n";
-        if (norm_res < 1.0e-8)
+        check_convergence(nr_iter, converged);
+        if (converged)
             return;
 
         delta_d = Kjd.ldlt().solve(-Rd);
         dd += delta_d;
         reform_full_sol();
     }
+
+    std::cout << "Convergence Failed. Reduce load step!\n";
 }
 
 template<unsigned int dim>
@@ -335,6 +335,20 @@ void FSElasticityFEM<dim>::apply_dirichlet_BC()
             Kjd(idx, jdx) = Kj(dirmap[idx], dirmap[jdx]);
 
         Rd(jdx) = R(dirmap[jdx]);
+    }
+}
+
+template<unsigned int dim>
+void FSElasticityFEM<dim>::check_convergence(unsigned int nr_iter, bool& converged)
+{
+    converged = false;
+    double norm_res = Rd.norm();
+    std::cout << "NR iteration number = " << nr_iter + 1 << "\n";
+    std::cout << "Residual = " << norm_res << "\n";
+    if (norm_res < 1.0e-8)
+    {
+        converged = true;
+        std::cout << "Convergence Successful!\n";
     }
 }
 

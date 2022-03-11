@@ -30,6 +30,7 @@ private:
                             double det_jac, Eigen::MatrixXd& Kjq);
     void create_dirichlet_map();
     void apply_dirichlet_BC();
+    void check_convergence(unsigned int nr_iter, bool& converged);
     void reform_full_sol();
 
 private:
