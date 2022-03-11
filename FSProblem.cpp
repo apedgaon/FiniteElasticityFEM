@@ -5,12 +5,12 @@
 void Problem1()
 {
     FSElasticityFEM<3> fem;
-    fem.geom.length[0] = 0.1;
-    fem.geom.length[1] = 0.03;
-    fem.geom.length[2] = 0.03;
+    fem.geom.length[0] = 10.0;  // cm
+    fem.geom.length[1] = 3.0;   // cm
+    fem.geom.length[2] = 3.0;   // cm
 
-    fem.mat.lambda = 6.0e10;
-    fem.mat.mu = 2.0e10;
+    fem.mat.lambda = 6.0e6;     // N cm^-2
+    fem.mat.mu = 2.0e6;         // N cm^-2
     fem.mat.init_elasticity_tensor();
 
     fem.mesh.mesh_type = MeshType::hexahedral;
@@ -40,16 +40,16 @@ void Problem1()
             temp.val = 0.0;
             fem.dirBCs.push_back(temp);
         }
-        else if (fabs(nd_coords[0] - 0.1) < 1.0e-8)
+        else if (fabs(nd_coords[0] - 10.0) < 1.0e-8)
         {
             DirichletBC temp;
             temp.node = idx;
             temp.dof = 0;
-            temp.val = 0.01;
+            temp.val = 1.0;     // cm
             fem.dirBCs.push_back(temp);
         }
         
-        if ((fabs(nd_coords[2] - 0.03) < 1.0e-8) && (fabs(nd_coords[0] - 0.0) > 1.0e-8))
+        if ((fabs(nd_coords[2] - 3.0) < 1.0e-8) && (fabs(nd_coords[0] - 0.0) > 1.0e-8))
         {
             DirichletBC temp;
             temp.node = idx;
@@ -60,7 +60,7 @@ void Problem1()
     }
 
     fem.sol_ctrls.antype = AnalysisType::_static;
-    fem.sol_ctrls.nsteps = 5;
+    fem.sol_ctrls.nsteps = 1;
     fem.sol_ctrls.ninc_max = 10;
     fem.sol_ctrls.nr_tol = 1.0e-8;
 
