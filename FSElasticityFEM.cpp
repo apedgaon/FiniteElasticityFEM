@@ -122,10 +122,10 @@ void FSElasticityFEM<dim>::solve()
 }
 
 template<unsigned int dim>
-void FSElasticityFEM<dim>::post_print()
+void FSElasticityFEM<dim>::post_print(std::string file)
 {
     // raw_sol_print();
-    fem_to_vtk_vector("FSElasticity_cpp", mesh.elem_conn, mesh.nodal_coords, d);
+    fem_to_vtk_vector(file, mesh.elem_conn, mesh.nodal_coords, d);
 }
 
 template<unsigned int dim>

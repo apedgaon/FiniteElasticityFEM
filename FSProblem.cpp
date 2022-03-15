@@ -4,6 +4,7 @@
 
 void Problem1()
 {
+    std::cout << "PROBLEM 1 ANALYSIS";
     FSElasticityFEM<3> fem;
     fem.geom.length[0] = 10.0;  // cm
     fem.geom.length[1] = 3.0;   // cm
@@ -66,11 +67,13 @@ void Problem1()
 
     fem.initialize();
     fem.solve();
-    fem.post_print();
+    fem.post_print("ProblemFS1");
+    std::cout << "END PROBLEM 1 ANALYSIS\n\n";
 }
 
 void Problem2()
 {
+    std::cout << "PROBLEM 2 ANALYSIS";
     FSElasticityFEM<3> fem;
     fem.geom.length[0] = 10.0;  // cm
     fem.geom.length[1] = 3.0;   // cm
@@ -124,12 +127,13 @@ void Problem2()
 
     fem.initialize();
     fem.solve();
-    fem.post_print();
+    fem.post_print("ProblemFS2");
+    std::cout << "END PROBLEM 2 ANALYSIS\n";
 }
 
 int main(int argc, char* argv[])
 {
-    //Problem1();
+    Problem1();
     Problem2();
     return 0;
 }

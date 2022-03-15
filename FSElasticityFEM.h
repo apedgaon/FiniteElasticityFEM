@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 #include <Eigen/Dense>
 #include "FEMUtility.h"
 
@@ -12,7 +13,7 @@ public:
     void initialize();
     void assemble();
     void solve();
-    void post_print();
+    void post_print(std::string file);
 
     Geometry<dim> geom;
     Material mat;
