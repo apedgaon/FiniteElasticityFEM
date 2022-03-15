@@ -35,6 +35,7 @@ private:
     void apply_dirichlet_BC();
     void check_convergence(unsigned int nr_iter, bool& converged);
     void reform_full_sol();
+    void raw_sol_print();
 
 private:
     Eigen::VectorXd d;

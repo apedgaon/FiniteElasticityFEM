@@ -124,61 +124,7 @@ void FSElasticityFEM<dim>::solve()
 template<unsigned int dim>
 void FSElasticityFEM<dim>::post_print()
 {
-    std::ofstream nc("nodal_coords.txt");
-    if (nc.is_open())
-    {
-        for (unsigned int idx = 0; idx < mesh.Nnd - 1; ++idx)
-        {
-            for (unsigned int idim = 0; idim < dim; ++idim)
-                nc << std::setprecision(16) << mesh.nodal_coords[idx][idim] << "\t";
-
-            nc << "\n";
-        }
-
-        for (unsigned int idim = 0; idim < dim; ++idim)
-            nc << std::setprecision(16) << mesh.nodal_coords[mesh.Nnd - 1][idim] << "\t";
-        nc.close();
-    }
-
-    std::ofstream ec("elem_conn.txt");
-    if (ec.is_open())
-    {
-        for (unsigned int idx = 0; idx < mesh.Nel - 1; ++idx)
-        {
-            for (unsigned int ind = 0; ind < mesh.Nen; ++ind)
-                ec << std::setprecision(16) << mesh.elem_conn[idx][ind] << "\t";
-
-            ec << "\n";
-        }
-
-        for (unsigned int ind = 0; ind < mesh.Nen; ++ind)
-            ec << std::setprecision(16) << mesh.elem_conn[mesh.Nel - 1][ind] << "\t";
-        ec.close();
-    }
-
-    std::ofstream sol("sol.txt");
-    if (sol.is_open())
-    {
-        for (unsigned int ind = 0; ind < mesh.Nnd - 1; ++ind)
-        {
-            for (unsigned int idim = 0; idim < dim; ++idim)
-            {
-                unsigned int gidx = dim * ind + idim;
-                sol << std::setprecision(16) << d(gidx) << "\t";
-            }
-
-            sol << "\n";
-        }
-
-        for (unsigned int idim = 0; idim < dim; ++idim)
-        {
-            unsigned int gidx = dim * (mesh.Nnd - 1) + idim;
-            sol << std::setprecision(16) << d(gidx) << "\t";
-        }
-
-        sol.close();
-    }
-
+    // raw_sol_print();
     fem_to_vtk_vector("FSElasticity_cpp", mesh.elem_conn, mesh.nodal_coords, d);
 }
 
@@ -439,4 +385,63 @@ void FSElasticityFEM<dim>::reform_full_sol()
 {
     for (unsigned int idx = 0; idx < ucDofs; ++idx)
         d(dirmap[idx]) = dd(idx);
+}
+
+template<unsigned int dim>
+void FSElasticityFEM<dim>::raw_sol_print()
+{
+    std::ofstream nc("nodal_coords.txt");
+    if (nc.is_open())
+    {
+        for (unsigned int idx = 0; idx < mesh.Nnd - 1; ++idx)
+        {
+            for (unsigned int idim = 0; idim < dim; ++idim)
+                nc << std::setprecision(16) << mesh.nodal_coords[idx][idim] << "\t";
+
+            nc << "\n";
+        }
+
+        for (unsigned int idim = 0; idim < dim; ++idim)
+            nc << std::setprecision(16) << mesh.nodal_coords[mesh.Nnd - 1][idim] << "\t";
+        nc.close();
+    }
+
+    std::ofstream ec("elem_conn.txt");
+    if (ec.is_open())
+    {
+        for (unsigned int idx = 0; idx < mesh.Nel - 1; ++idx)
+        {
+            for (unsigned int ind = 0; ind < mesh.Nen; ++ind)
+                ec << std::setprecision(16) << mesh.elem_conn[idx][ind] << "\t";
+
+            ec << "\n";
+        }
+
+        for (unsigned int ind = 0; ind < mesh.Nen; ++ind)
+            ec << std::setprecision(16) << mesh.elem_conn[mesh.Nel - 1][ind] << "\t";
+        ec.close();
+    }
+
+    std::ofstream sol("sol.txt");
+    if (sol.is_open())
+    {
+        for (unsigned int ind = 0; ind < mesh.Nnd - 1; ++ind)
+        {
+            for (unsigned int idim = 0; idim < dim; ++idim)
+            {
+                unsigned int gidx = dim * ind + idim;
+                sol << std::setprecision(16) << d(gidx) << "\t";
+            }
+
+            sol << "\n";
+        }
+
+        for (unsigned int idim = 0; idim < dim; ++idim)
+        {
+            unsigned int gidx = dim * (mesh.Nnd - 1) + idim;
+            sol << std::setprecision(16) << d(gidx) << "\t";
+        }
+
+        sol.close();
+    }
 }
