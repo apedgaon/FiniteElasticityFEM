@@ -178,6 +178,8 @@ void FSElasticityFEM<dim>::post_print()
 
         sol.close();
     }
+
+    fem_to_vtk_vector("FSElasticity_cpp", mesh.elem_conn, mesh.nodal_coords, d);
 }
 
 template<unsigned int dim>

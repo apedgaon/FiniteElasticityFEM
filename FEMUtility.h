@@ -130,3 +130,4 @@ struct SolverControls
 };
 
 void print_mat(Eigen::MatrixXd& A, std::string filename);
+void fem_to_vtk_vector(std::string file, std::vector<connectivity>& ec, std::vector<coords>& nc, Eigen::VectorXd& d);
