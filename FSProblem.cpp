@@ -33,13 +33,16 @@ void Problem1()
             temp.val = 0.0;
             fem.dirBCs.push_back(temp);
 
-            temp.dof = 1;
-            temp.val = 0.0;
-            fem.dirBCs.push_back(temp);
+            if ((fabs(nd_coords[1] - 0.0) < 1.0e-8) && (fabs(nd_coords[2] - 0.0) < 1.0e-8))
+            {
+                temp.dof = 1;
+                temp.val = 0.0;
+                fem.dirBCs.push_back(temp);
 
-            temp.dof = 2;
-            temp.val = 0.0;
-            fem.dirBCs.push_back(temp);
+                temp.dof = 2;
+                temp.val = 0.0;
+                fem.dirBCs.push_back(temp);
+            }
         }
         else if (fabs(nd_coords[0] - 10.0) < 1.0e-8)
         {
@@ -50,7 +53,7 @@ void Problem1()
             fem.dirBCs.push_back(temp);
         }
         
-        if ((fabs(nd_coords[2] - 3.0) < 1.0e-8) && (fabs(nd_coords[0] - 0.0) > 1.0e-8))
+        if ((fabs(nd_coords[2] - 3.0) < 1.0e-8))
         {
             DirichletBC temp;
             temp.node = idx;
@@ -134,6 +137,6 @@ void Problem2()
 int main(int argc, char* argv[])
 {
     Problem1();
-    Problem2();
+    //Problem2();
     return 0;
 }
