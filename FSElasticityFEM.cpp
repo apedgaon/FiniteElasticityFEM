@@ -34,13 +34,17 @@ void FSElasticityFEM<dim>::initialize()
 template<unsigned int dim>
 void FSElasticityFEM<dim>::assemble()
 {
+    // Assign zero value to Residual and System Stiffness
     R = Eigen::VectorXd::Zero(gDofs);
     Kj = Eigen::MatrixXd::Zero(gDofs, gDofs);
+
+    // number of local dofs
     unsigned int loc_dofs = mesh.Nen * dim;
 
     // Element Loop
     for (auto& conn : mesh.elem_conn)
     {
+        // Intitialize local residual and stiffness
         Eigen::VectorXd Rl = Eigen::VectorXd::Zero(loc_dofs);
         Eigen::MatrixXd Kjl = Eigen::MatrixXd::Zero(loc_dofs, loc_dofs);
 
