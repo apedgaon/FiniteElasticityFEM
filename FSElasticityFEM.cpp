@@ -24,6 +24,7 @@ void FSElasticityFEM<dim>::initialize()
     dd.resize(ucDofs);
     Rd.resize(ucDofs);
     Kjd.resize(ucDofs, ucDofs);
+    analysis_complete = false;
 
     // get initial dirichlet displacements
     for (unsigned int idx = 0; idx < ucDofs; ++idx)
@@ -91,8 +92,10 @@ void FSElasticityFEM<dim>::assemble()
 template<unsigned int dim>
 void FSElasticityFEM<dim>::solve()
 {
+    // Define delta d
     Eigen::VectorXd delta_d(ucDofs);
 
+    // Load step loop
     for (unsigned int istep = 0; istep < sol_ctrls.nsteps; ++istep)
     {
         std::cout << "\n";
@@ -124,13 +127,17 @@ void FSElasticityFEM<dim>::solve()
     }
 
     std::cout << "\n*** Analysis Complete!\n";
+    analysis_complete = true;
 }
 
 template<unsigned int dim>
 void FSElasticityFEM<dim>::post_print(std::string file)
 {
-    // raw_sol_print();
-    fem_to_vtk_vector(file, mesh.elem_conn, mesh.nodal_coords, d);
+    if (analysis_complete)
+    {
+        // raw_sol_print();
+        fem_to_vtk_vector(file, mesh.elem_conn, mesh.nodal_coords, d);
+    }
 }
 
 template<unsigned int dim>

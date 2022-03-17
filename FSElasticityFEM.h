@@ -54,4 +54,5 @@ private:
     unsigned int gDofs;     // total global dofs
     unsigned int ucDofs;    // unconstrained dofs
     std::vector<unsigned int> dirmap;   // dirichlet map
+    bool analysis_complete;
 };
