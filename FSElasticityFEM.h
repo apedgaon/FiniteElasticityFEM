@@ -39,16 +39,19 @@ private:
     void raw_sol_print();
 
 private:
+    // displacements
     Eigen::VectorXd d;
     Eigen::VectorXd dd;
 
+    // Residuals
     Eigen::VectorXd R;
     Eigen::VectorXd Rd;
 
+    // System Jacobian Stiffness
     Eigen::MatrixXd Kj;
     Eigen::MatrixXd Kjd;
 
-    unsigned int gDofs;
-    unsigned int ucDofs;
-    std::vector<unsigned int> dirmap;
+    unsigned int gDofs;     // total global dofs
+    unsigned int ucDofs;    // unconstrained dofs
+    std::vector<unsigned int> dirmap;   // dirichlet map
 };
