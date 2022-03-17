@@ -14,13 +14,18 @@ inline void FSElasticityFEM<dim>::generate_mesh()
 template<unsigned int dim>
 void FSElasticityFEM<dim>::initialize()
 {
+    // create map for unconstrained dofs to global dofs
     create_dirichlet_map();
 
-    d = Eigen::VectorXd::Zero(gDofs);
+    // intialize global and dirichlet matrix and vectors
+    d = Eigen::VectorXd::Zero(gDofs);       // initial zero guess
+    R.resize(gDofs);
+    Kj.resize(gDofs, gDofs);
     dd.resize(ucDofs);
     Rd.resize(ucDofs);
     Kjd.resize(ucDofs, ucDofs);
 
+    // get initial dirichlet displacements
     for (unsigned int idx = 0; idx < ucDofs; ++idx)
         dd(idx) = d(dirmap[idx]);
 }
@@ -319,7 +324,8 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
 template<unsigned int dim>
 void FSElasticityFEM<dim>::create_dirichlet_map()
 {
-    // dirBCs should be sorted
+    // dirBCs should be sorted for this to work currently
+
     gDofs = dim * mesh.Nnd;
     unsigned int dirBCsize = static_cast<unsigned int>(dirBCs.size());
     ucDofs = gDofs - dirBCsize;       // unconstrained dofs
