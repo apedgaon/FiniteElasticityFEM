@@ -85,7 +85,7 @@ void FSElasticityFEM<dim>::assemble()
             Kjl += Kjq;
         }
 
-        // Global Assembly Rl -> R
+        // Global Assembly Rl -> R, Kjl -> Kj
         for (unsigned int jdx = 0; jdx < loc_dofs; ++jdx)
         {
             R(gidx(jdx)) += Rl(jdx);
