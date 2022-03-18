@@ -41,40 +41,44 @@ void FSElasticityFEM<dim>::assemble()
     // number of local dofs
     unsigned int loc_dofs = mesh.Nen * dim;
 
+    // Initialize local matrices and vectors
+    Eigen::VectorXd Rl(loc_dofs);
+    Eigen::MatrixXd Kjl(loc_dofs, loc_dofs);
+    Eigen::MatrixXd xe(dim, mesh.Nen);
+    Eigen::VectorXui gidx(loc_dofs);
+    Eigen::VectorXd de(mesh.Nen * dim);
+    Eigen::MatrixXd jac(dim, dim), jac_inv(dim, dim), dNdX(mesh.Nen, dim);
+    double det_jac;
+    Eigen::MatrixXd dfgrd(dim, dim), E_gl(dim, dim), S_pk2(dim, dim);
+    Eigen::VectorXd Rq(loc_dofs);
+    Eigen::MatrixXd Kjq(loc_dofs, loc_dofs);
+
     // Element Loop
     for (auto& conn : mesh.elem_conn)
     {
-        // Intitialize local residual and stiffness
-        Eigen::VectorXd Rl = Eigen::VectorXd::Zero(loc_dofs);
-        Eigen::MatrixXd Kjl = Eigen::MatrixXd::Zero(loc_dofs, loc_dofs);
+        // Set zero values to residual and system stiffness  
+        Rl.setZero();
+        Kjl.setZero();
 
         // Compute elemental coordinates and displacements
-        Eigen::MatrixXd xe(dim, mesh.Nen);
-        Eigen::VectorXui gidx(loc_dofs);
-        Eigen::VectorXd de(mesh.Nen * dim);
         compute_elem_quantities(conn, gidx, xe, de);
 
         // Quadrature loop
         for (unsigned int iq = 0; iq < mesh.Nq; ++iq)
         {
             // Compute quadrature jacobian and derivatives
-            Eigen::MatrixXd jac, jac_inv, dNdX;
-            double det_jac;
             compute_quad_derivatives(iq, xe, de, jac, jac_inv, dNdX, det_jac);
 
             // Compute quadrature deformation gradient, strain and stress
-            Eigen::MatrixXd dfgrd, E_gl, S_pk2;
             compute_quad_deformation(de, dNdX, dfgrd, E_gl, S_pk2);
 
             // Compute quadrature Residual
-            Eigen::MatrixXd Rq;
             compute_quad_res(iq, dNdX, dfgrd, S_pk2, det_jac, Rq);
             
             // Update elemental Residual 
             Rl += Rq;
 
             // Compute quadrature NR Stiffness
-            Eigen::MatrixXd Kjq;
             compute_quad_stiff(iq, dNdX, dfgrd, S_pk2, det_jac, Kjq);
 
             // Update elemental NR Stiffness
@@ -165,7 +169,7 @@ void FSElasticityFEM<dim>::compute_quad_derivatives(unsigned int iq, Eigen::Matr
                                                     Eigen::MatrixXd& jac_inv, Eigen::MatrixXd& dNdX, double& det_jac)
 {
     // Isoparametric Jacobian and Inverse
-    jac = Eigen::MatrixXd::Zero(dim, dim);
+    jac.setZero();
     for (unsigned int jdim = 0; jdim < dim; ++jdim)
     {
         for (unsigned int idim = 0; idim < dim; ++idim)
@@ -211,7 +215,6 @@ void FSElasticityFEM<dim>::compute_quad_deformation(Eigen::VectorXd& de, Eigen::
 
     // Compute PK2 Stress using St. Venant Kirchoff Relations
     double tr_E_gl = E_gl.trace();
-    S_pk2.resize(dim, dim);
     for (unsigned int jdim = 0; jdim < dim; ++jdim)
     {
         for (unsigned int idim = 0; idim < dim; ++idim)
@@ -235,7 +238,7 @@ void FSElasticityFEM<dim>::compute_quad_deformation(Eigen::VectorXd& de, Eigen::
 
 template<unsigned int dim>
 void FSElasticityFEM<dim>::compute_quad_res(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd,
-                                            Eigen::MatrixXd& S_pk2, double det_jac, Eigen::MatrixXd& Rq)
+                                            Eigen::MatrixXd& S_pk2, double det_jac, Eigen::VectorXd& Rq)
 {
     unsigned int loc_dofs = dim * mesh.Nen;
 

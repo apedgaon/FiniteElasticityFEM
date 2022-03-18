@@ -28,7 +28,7 @@ private:
     void compute_quad_deformation(Eigen::VectorXd& de, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& E_gl,
                                   Eigen::MatrixXd& S_pk2);
     void compute_quad_res(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& S_pk2,
-                          double det_jac, Eigen::MatrixXd& Rq);
+                          double det_jac, Eigen::VectorXd& Rq);
     void compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd, Eigen::MatrixXd& S_pk2,
                             double det_jac, Eigen::MatrixXd& Kjq);
     void create_dirichlet_map();
