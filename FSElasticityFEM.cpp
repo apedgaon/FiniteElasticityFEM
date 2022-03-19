@@ -403,7 +403,6 @@ void FSElasticityFEM<dim>::apply_dirichlet_BC()
 template<unsigned int dim>
 void FSElasticityFEM<dim>::check_convergence(unsigned int nr_iter, bool& converged)
 {
-    converged = false;
     double norm_res = Rd.norm();
     std::cout << "NR iteration number = " << nr_iter + 1 << "\n";
     std::cout << "Residual norm = " << norm_res << "\n";
