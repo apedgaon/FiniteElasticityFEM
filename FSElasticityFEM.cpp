@@ -90,9 +90,7 @@ void FSElasticityFEM<dim>::assemble()
         {
             R(gidx(jdx)) += Rl(jdx);
             for (unsigned int idx = 0; idx < loc_dofs; ++idx)
-            {
                 Kj(gidx(idx), gidx(jdx)) += Kjl(idx, jdx);
-            }
         }
     }
 }
