@@ -1,10 +1,12 @@
 #include <iostream>
+#include <chrono>
 #include "FSElasticityFEM.h"
 
 
 void Problem1()
 {
     std::cout << "PROBLEM 1 ANALYSIS";
+    auto start = std::chrono::high_resolution_clock::now();
 
     // Create FEM Object
     FSElasticityFEM<3> fem;
@@ -79,12 +81,15 @@ void Problem1()
     fem.solve();
     fem.post_print("ProblemFS1");
 
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time Elapsed = " << static_cast<std::chrono::duration<double>>((end - start)).count() << "\n";
     std::cout << "END PROBLEM 1 ANALYSIS\n\n";
 }
 
 void Problem2()
 {
     std::cout << "PROBLEM 2 ANALYSIS";
+    auto start = std::chrono::high_resolution_clock::now();
 
     // Create FEM Object
     FSElasticityFEM<3> fem;
@@ -147,6 +152,8 @@ void Problem2()
     fem.solve();
     fem.post_print("ProblemFS2");
 
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time Elapsed = " << static_cast<std::chrono::duration<double>>((end - start)).count() << "\n";
     std::cout << "END PROBLEM 2 ANALYSIS\n";
 }
 
@@ -154,5 +161,6 @@ int main(int argc, char* argv[])
 {
     Problem1();
     Problem2();
+
     return 0;
 }
