@@ -430,6 +430,8 @@ void print_mat(Eigen::MatrixXd& A, std::string filename)
     }
 }
 
+// This function converts solution vector and mesh to vtk file
+// This is simply a C++ version of MATLAB code written by Prof. Shiva Rudraraju
 void fem_to_vtk_vector(std::string file, std::vector<connectivity>& ec, std::vector<coords>& nc, Eigen::VectorXd& d)
 {
     file = file + std::string(".vtu");
