@@ -168,7 +168,7 @@ template<unsigned int dim>
 void FSElasticityFEM<dim>::compute_quad_derivatives(unsigned int iq, Eigen::MatrixXd& xe, Eigen::VectorXd& de, Eigen::MatrixXd& jac,
                                                     Eigen::MatrixXd& jac_inv, Eigen::MatrixXd& dNdX, double& det_jac)
 {
-    // Isoparametric Jacobian and Inverse
+    // Compute isoparametric Jacobian and Inverse
     jac.setZero();
     for (unsigned int jdim = 0; jdim < dim; ++jdim)
     {
