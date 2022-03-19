@@ -503,7 +503,7 @@ void fem_to_vtk_vector(std::string file, std::vector<connectivity>& ec, std::vec
 
         // vector field
         vtk_stream << "<PointData  Scalars=\"u\">\n";
-        vtk_stream << "<DataArray  type=\"Float32\"  Name=\"VectorField1\"  NumberOfComponents=\"" << 3 << "\"  format=\"ascii\">\n";
+        vtk_stream << "<DataArray  type=\"Float32\"  Name=\"DisplacementField\"  NumberOfComponents=\"" << 3 << "\"  format=\"ascii\">\n";
         auto field_size = dim_num;
         for (size_t ind = 0; ind < num_nodes; ++ind)
         {
