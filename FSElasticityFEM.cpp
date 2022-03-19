@@ -42,17 +42,15 @@ void FSElasticityFEM<dim>::assemble()
     unsigned int loc_dofs = mesh.Nen * dim;
 
     // Initialize local matrices and vectors
-    Eigen::VectorXd Rl(loc_dofs);
-    Eigen::MatrixXd Kjl(loc_dofs, loc_dofs);
-    Eigen::MatrixXd xe(dim, mesh.Nen);
-    Eigen::VectorXui gidx(loc_dofs);
-    Eigen::VectorXd de(mesh.Nen * dim);
-    Eigen::MatrixXd jac(dim, dim), jac_inv(dim, dim), dNdX(mesh.Nen, dim);
-    double det_jac;
-    Eigen::MatrixXd dfgrd(dim, dim), E_gl(dim, dim), S_pk2(dim, dim);
-    Eigen::VectorXd Rq(loc_dofs);
-    Eigen::MatrixXd Kjq(loc_dofs, loc_dofs);
-
+    Eigen::VectorXd Rl(loc_dofs);               // Local Residual
+    Eigen::MatrixXd Kjl(loc_dofs, loc_dofs);    // Local System Stiffness
+    Eigen::MatrixXd xe(dim, mesh.Nen);          // Local Coordinates of nodes
+    Eigen::VectorXui gidx(loc_dofs);            // Global index of local dofs
+    Eigen::VectorXd de(mesh.Nen * dim);         // Local nodal displacements
+    Eigen::MatrixXd jac(dim, dim), jac_inv(dim, dim), dNdX(mesh.Nen, dim);  // Quadrature Isoparamteric Jacobian, ... 
+    double det_jac;                                                         // ... Inverse Jacobian and dN / dX matrices
+    Eigen::MatrixXd dfgrd(dim, dim), E_gl(dim, dim), S_pk2(dim, dim);       // Quadraduture Deformation gradient, ...
+                                                                            // ... Green Lagrange Strain, PK - 2 Stress
     // Element Loop
     for (auto& conn : mesh.elem_conn)
     {
@@ -73,16 +71,10 @@ void FSElasticityFEM<dim>::assemble()
             compute_quad_deformation(de, dNdX, dfgrd, E_gl, S_pk2);
 
             // Compute quadrature Residual
-            compute_quad_res(iq, dNdX, dfgrd, S_pk2, det_jac, Rq);
-            
-            // Update elemental Residual 
-            Rl += Rq;
+            compute_quad_res(iq, dNdX, dfgrd, S_pk2, det_jac, Rl);
 
             // Compute quadrature NR Stiffness
-            compute_quad_stiff(iq, dNdX, dfgrd, S_pk2, det_jac, Kjq);
-
-            // Update elemental NR Stiffness
-            Kjl += Kjq;
+            compute_quad_stiff(iq, dNdX, dfgrd, S_pk2, det_jac, Kjl);
         }
 
         // Global Assembly Rl -> R, Kjl -> Kj
@@ -253,13 +245,11 @@ void FSElasticityFEM<dim>::compute_quad_deformation(Eigen::VectorXd& de, Eigen::
 
 template<unsigned int dim>
 void FSElasticityFEM<dim>::compute_quad_res(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd,
-                                            Eigen::MatrixXd& S_pk2, double det_jac, Eigen::VectorXd& Rq)
+                                            Eigen::MatrixXd& S_pk2, double det_jac, Eigen::VectorXd& Rl)
 {
     unsigned int loc_dofs = dim * mesh.Nen;
 
     // Contributions from PK2 stress
-    // Contributions from body forces (not implemented)
-    Eigen::VectorXd rq(loc_dofs);
     for (unsigned int ashp = 0; ashp < mesh.Nen; ++ashp)
     {
         for (unsigned int idim = 0; idim < dim; ++idim)
@@ -272,25 +262,23 @@ void FSElasticityFEM<dim>::compute_quad_res(unsigned int iq, Eigen::MatrixXd& dN
                     temp += dNdX(ashp, Kdim) * dfgrd(idim, Jdim) * S_pk2(Jdim, Kdim);
             }
 
-            rq(loc_idx) = temp * mesh.wts(iq) * det_jac;
+            Rl(loc_idx) += temp * mesh.wts(iq) * det_jac;
         }
     }
 
-    // Contribuitions from tractions (Not implemented)
-    Eigen::VectorXd sq = Eigen::VectorXd::Zero(loc_dofs);
+    // Contributions from body forces (not implemented)
 
-    // Total Residual
-    Rq = rq - sq;
+    // Contribuitions from tractions (Not implemented)
+
 }
 
 template<unsigned int dim>
 void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& dNdX, Eigen::MatrixXd& dfgrd,
-                                              Eigen::MatrixXd& S_pk2, double det_jac, Eigen::MatrixXd& Kjq)
+                                              Eigen::MatrixXd& S_pk2, double det_jac, Eigen::MatrixXd& Kjl)
 {
     unsigned int loc_dofs = dim * mesh.Nen;
 
     // Compute system geometric stiffness
-    Eigen::MatrixXd Kg = Eigen::MatrixXd::Zero(loc_dofs, loc_dofs);
     for (unsigned int bshp = 0; bshp < mesh.Nen; ++bshp)
     {
         for (unsigned int ashp = 0; ashp < mesh.Nen; ++ashp)
@@ -306,13 +294,12 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
                         temp += dNdX(ashp, Jdim) * S_pk2(Idim, Jdim) * dNdX(bshp, Idim);
                 }
 
-                Kg(loc_idx, loc_jdx) = temp * mesh.wts(iq) * det_jac;
+                Kjl(loc_idx, loc_jdx) += temp * mesh.wts(iq) * det_jac;
             }
         }
     }
 
     // Compute system material stiffness
-    Eigen::MatrixXd Km = Eigen::MatrixXd::Zero(loc_dofs, loc_dofs);
     for (unsigned int bshp = 0; bshp < mesh.Nen; ++bshp)
     {
         for (unsigned int jdim = 0; jdim < dim; ++jdim)
@@ -339,14 +326,11 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
                         }
                     }
 
-                    Km(loc_idx, loc_jdx) = temp * mesh.wts(iq) * det_jac;
+                    Kjl(loc_idx, loc_jdx) += temp * mesh.wts(iq) * det_jac;
                 }
             }
         }
     }
-
-    // Compute system total stiffness
-    Kjq = Kg + Km;
 }
 
 template<unsigned int dim>
