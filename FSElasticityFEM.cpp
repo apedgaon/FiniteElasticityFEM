@@ -106,26 +106,40 @@ void FSElasticityFEM<dim>::solve()
     // Load step loop
     for (unsigned int istep = 0; istep < sol_ctrls.nsteps; ++istep)
     {
+        // Print load step info
         std::cout << "\n";
         std::cout << "Load Step = " << istep + 1 << "\n";
         bool converged = false;
+
+        // Apply load using a multiplier based on load step
         double step_mult = 1.0 * (istep + 1) / sol_ctrls.nsteps;
         apply_step_BC(step_mult);
 
-        // NR iterations
+        // Newton-Raphson (NR) iterations
         for (unsigned int inc = 0; inc < sol_ctrls.ninc_max; ++inc)
         {
+            // Assemble Residual and System Stiffness
             assemble();
+
+            // Get Dirchlet Residual and System Stiffness
             apply_dirichlet_BC();
+
+            // Check convergence by computing norm of the residual and comparing with tolerance
             check_convergence(inc, converged);
             if (converged)
                 break;
 
+            // If not converged, solve for delta d (currently uses Cholesky)
             delta_d = Kjd.ldlt().solve(-Rd);
+
+            // Update unconstrained displacements
             dd += delta_d;
+
+            // Update full displacements
             reform_full_sol();
         }
 
+        // Message if not converged and return from this method
         if (!converged)
         {
             std::cout << "*** Convergence Failed in max NR iterations!\n"
@@ -134,6 +148,7 @@ void FSElasticityFEM<dim>::solve()
         }
     }
 
+    // Set Analysis complete and print message
     std::cout << "\n*** Analysis Complete!\n";
     analysis_complete = true;
 }
@@ -144,6 +159,8 @@ void FSElasticityFEM<dim>::post_print(std::string file)
     if (analysis_complete)
     {
         // raw_sol_print();
+
+        // Write vtk file with mesh and solutions
         fem_to_vtk_vector(file, mesh.elem_conn, mesh.nodal_coords, d);
     }
 }
