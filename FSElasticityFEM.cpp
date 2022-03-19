@@ -276,7 +276,6 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
 
     // Compute system geometric stiffness
     Eigen::MatrixXd Kg = Eigen::MatrixXd::Zero(loc_dofs, loc_dofs);
-
     for (unsigned int bshp = 0; bshp < mesh.Nen; ++bshp)
     {
         for (unsigned int ashp = 0; ashp < mesh.Nen; ++ashp)
@@ -301,9 +300,9 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
     Eigen::MatrixXd Km = Eigen::MatrixXd::Zero(loc_dofs, loc_dofs);
     for (unsigned int bshp = 0; bshp < mesh.Nen; ++bshp)
     {
-        for (unsigned int kdim = 0; kdim < dim; ++kdim)
+        for (unsigned int jdim = 0; jdim < dim; ++jdim)
         {
-            unsigned int loc_kdx = dim * bshp + kdim;
+            unsigned int loc_jdx = dim * bshp + jdim;
             for (unsigned int ashp = 0; ashp < mesh.Nen; ++ashp)
             {
                 for (unsigned int idim = 0; idim < dim; ++idim)
@@ -318,14 +317,14 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
                             {
                                 for (unsigned int Ldim = 0; Ldim < dim; ++Ldim)
                                 {
-                                    temp += dfgrd(idim, Idim) * mat.C[Idim][Jdim][Kdim][Ldim] *
-                                            dfgrd(kdim, Kdim) * dNdX(bshp, Ldim) * dNdX(ashp, Jdim);
+                                    temp += dNdX(ashp, Jdim) * dfgrd(idim, Idim) *
+                                        mat.C[Idim][Jdim][Kdim][Ldim] * dfgrd(jdim, Ldim) * dNdX(bshp, Kdim);
                                 }
                             }
                         }
                     }
 
-                    Km(loc_idx, loc_kdx) = temp * mesh.wts(iq) * det_jac;
+                    Km(loc_idx, loc_jdx) = temp * mesh.wts(iq) * det_jac;
                 }
             }
         }
