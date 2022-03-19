@@ -251,10 +251,10 @@ void FSElasticityFEM<dim>::compute_quad_res(unsigned int iq, Eigen::MatrixXd& dN
         {
             unsigned int loc_idx = dim * ashp + idim;
             double temp = 0.0;
-            for (unsigned int kdim = 0; kdim < dim; ++kdim)
+            for (unsigned int Jdim = 0; Jdim < dim; ++Jdim)
             {
-                for (unsigned int ldim = 0; ldim < dim; ++ldim)
-                    temp += dfgrd(idim, kdim) * S_pk2(kdim, ldim) * dNdX(ashp, ldim);
+                for (unsigned int Kdim = 0; Kdim < dim; ++Kdim)
+                    temp += dfgrd(idim, Jdim) * S_pk2(Jdim, Kdim) * dNdX(ashp, Kdim);
             }
 
             rq(loc_idx) = temp * mesh.wts(iq) * det_jac;
