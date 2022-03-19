@@ -289,7 +289,7 @@ void FSElasticityFEM<dim>::compute_quad_stiff(unsigned int iq, Eigen::MatrixXd& 
                 for (unsigned int Idim = 0; Idim < dim; ++Idim)
                 {
                     for (unsigned int Jdim = 0; Jdim < dim; ++Jdim)
-                        temp += dNdX(bshp, Idim) * S_pk2(Idim, Jdim) * dNdX(ashp, Jdim);
+                        temp += dNdX(ashp, Jdim) * S_pk2(Idim, Jdim) * dNdX(bshp, Idim);
                 }
 
                 Kg(loc_idx, loc_jdx) = temp * mesh.wts(iq) * det_jac;
