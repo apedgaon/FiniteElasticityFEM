@@ -2,8 +2,6 @@
 #include <iomanip>
 #include "FEMUtility.h"
 
-template class Mesh<3>;
-
 double LinearLagrange::N(unsigned int index, double x)
 {
     double val = 0.0;
@@ -524,3 +522,8 @@ void fem_to_vtk_vector(std::string file, std::vector<connectivity>& ec, std::vec
         vtk_stream.close();
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+//                        Instantiate Mesh<dim>                            //
+/////////////////////////////////////////////////////////////////////////////
+template class Mesh<3>;

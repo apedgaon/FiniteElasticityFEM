@@ -3,8 +3,6 @@
 #include <iomanip>
 #include "FSElasticityFEM.h"
 
-template class FSElasticityFEM<3>;
-
 template<unsigned int dim>
 inline void FSElasticityFEM<dim>::generate_mesh()
 {
@@ -462,3 +460,9 @@ void FSElasticityFEM<dim>::raw_sol_print()
         sol.close();
     }
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//                   Instantiate FSElasticityFEM<dim>                      //
+/////////////////////////////////////////////////////////////////////////////
+template class FSElasticityFEM<3>;
