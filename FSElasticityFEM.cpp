@@ -96,7 +96,7 @@ void FSElasticityFEM<dim>::solve()
     {
         // Print load step info
         std::cout << "\n";
-        std::cout << "Load Step = " << istep + 1 << "\n";
+        std::cout << "  Load Step = " << istep + 1 << "\n";
         bool converged = false;
 
         // Apply load using a multiplier based on load step
@@ -386,8 +386,8 @@ template<unsigned int dim>
 void FSElasticityFEM<dim>::check_convergence(unsigned int nr_iter, bool& converged)
 {
     double norm_res = Rd.norm();
-    std::cout << "NR iteration number = " << nr_iter + 1 << "\n";
-    std::cout << "Residual norm = " << norm_res << "\n";
+    std::cout << "    NR iteration number = " << nr_iter + 1 << "\n";
+    std::cout << "    Residual norm = " << norm_res << "\n";
     if (norm_res < sol_ctrls.nr_tol)
     {
         converged = true;
