@@ -72,7 +72,7 @@ void Problem1()
 
     // Solver settings
     fem.sol_ctrls.antype = AnalysisType::_static;
-    fem.sol_ctrls.nsteps = 1;
+    fem.sol_ctrls.nsteps = 2;
     fem.sol_ctrls.ninc_max = 10;
     fem.sol_ctrls.nr_tol = 1.0e-8;
 
@@ -143,7 +143,7 @@ void Problem2()
 
     // Solver settings
     fem.sol_ctrls.antype = AnalysisType::_static;
-    fem.sol_ctrls.nsteps = 1;
+    fem.sol_ctrls.nsteps = 2;
     fem.sol_ctrls.ninc_max = 10;
     fem.sol_ctrls.nr_tol = 1.0e-8;
 
