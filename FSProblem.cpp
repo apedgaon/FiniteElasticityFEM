@@ -81,6 +81,7 @@ void Problem1()
     fem.solve();
     fem.post_print("ProblemFS1");
 
+    // End of Analysis, compute duration and print msg
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Time Elapsed = " << static_cast<std::chrono::duration<double>>((end - start)).count() << "\n";
     std::cout << "END PROBLEM 1 ANALYSIS\n\n";
@@ -152,6 +153,7 @@ void Problem2()
     fem.solve();
     fem.post_print("ProblemFS2");
 
+    // End of Analysis, compute duration and print msg
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Time Elapsed = " << static_cast<std::chrono::duration<double>>((end - start)).count() << "\n";
     std::cout << "END PROBLEM 2 ANALYSIS\n";
