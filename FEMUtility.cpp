@@ -2,6 +2,7 @@
 #include <iomanip>
 #include "FEMUtility.h"
 
+// 1D Element Linear Shape Fcn, Index for correct Shp fcn
 double LinearLagrange::N(unsigned int index, double x)
 {
     double val = 0.0;
@@ -13,6 +14,7 @@ double LinearLagrange::N(unsigned int index, double x)
     return val;
 }
 
+// 1D Element Derivative of shp fcn
 double LinearLagrange::dNdx(unsigned int index, double x)
 {
     double val = 0.0;
@@ -24,6 +26,7 @@ double LinearLagrange::dNdx(unsigned int index, double x)
     return val;
 }
 
+// 2D Element (Quad) Linear Shape Fcn, Index for correct Shp fcn
 double LinearLagrange::N_quad(unsigned int index, double xi, double eta)
 {
     double val = 0.0;
@@ -39,6 +42,7 @@ double LinearLagrange::N_quad(unsigned int index, double xi, double eta)
     return val;
 }
 
+// 2D Element (Quad) Derivative with xi of Linear Shape Fcn
 double LinearLagrange::dNdxi_quad(unsigned int index, double xi, double eta)
 {
     double val = 0.0;
@@ -54,6 +58,7 @@ double LinearLagrange::dNdxi_quad(unsigned int index, double xi, double eta)
     return val;
 }
 
+// 2D Element (Quad) Derivative with eta of Linear Shape Fcn
 double LinearLagrange::dNdeta_quad(unsigned int index, double xi, double eta)
 {
     double val = 0.0;
@@ -69,6 +74,7 @@ double LinearLagrange::dNdeta_quad(unsigned int index, double xi, double eta)
     return val;
 }
 
+// 2D (Tri) Element Linear Shape fcn, index for correct fcn
 double LinearLagrange::N_tri(unsigned int index, double xi, double eta)
 {
     double val = 0.0;
@@ -82,6 +88,7 @@ double LinearLagrange::N_tri(unsigned int index, double xi, double eta)
     return val;
 }
 
+// 2D (Tri) Element Derivative wrt xi of Linear Shape fcn
 double LinearLagrange::dNdxi_tri(unsigned int index, double xi, double eta)
 {
     double val = 0.0;
@@ -95,6 +102,7 @@ double LinearLagrange::dNdxi_tri(unsigned int index, double xi, double eta)
     return val;
 }
 
+// 2D (Tri) Element Derivative wrt eta of Linear Shape fcn
 double LinearLagrange::dNdeta_tri(unsigned int index, double xi, double eta)
 {
     double val = 0.0;
@@ -108,6 +116,7 @@ double LinearLagrange::dNdeta_tri(unsigned int index, double xi, double eta)
     return val;
 }
 
+// 3D (Hex) Element Linear Shape Fcn, Index for correct Shp fcn
 double LinearLagrange::N_hex(unsigned int index, double xi, double eta, double kappa)
 {
     double val = 0.0;
@@ -131,6 +140,7 @@ double LinearLagrange::N_hex(unsigned int index, double xi, double eta, double k
     return val;
 }
 
+// 3D (Hex) Element Derivatives of Linear Shape Fcn, index for correct Shp fcn, diff_idx for correct derivative
 double LinearLagrange::dNdxi_hex(unsigned int index, unsigned int diff_idx, double xi, double eta, double kappa)
 {
     double val = 0.0;
@@ -195,6 +205,7 @@ double LinearLagrange::dNdxi_hex(unsigned int index, unsigned int diff_idx, doub
     return val;
 }
 
+// 1D Element Quadratic Shp fcn
 double QuadraticLagrange::N(unsigned int index, double x)
 {
     double val = 0.0;
@@ -208,6 +219,7 @@ double QuadraticLagrange::N(unsigned int index, double x)
     return val;
 }
 
+// 1D Element Derivative of Quadratic Shp fcn
 double QuadraticLagrange::dNdx(unsigned int index, double x)
 {
     double val = 0.0;
@@ -221,6 +233,7 @@ double QuadraticLagrange::dNdx(unsigned int index, double x)
     return val;
 }
 
+// Gauss quadrature points for 1 pt, 2 pt and 3 pt
 double GsQuad::quadrature_pt(unsigned int num_pts, unsigned int index)
 {
     double retval = 0.0;
@@ -246,6 +259,7 @@ double GsQuad::quadrature_pt(unsigned int num_pts, unsigned int index)
     return retval;
 }
 
+// Gauss quadrature weights for 1 pt, 2 pt and 3 pt
 double GsQuad::weights(unsigned int num_pts, unsigned int index)
 {
     double retval = 0.0;
@@ -271,12 +285,13 @@ double GsQuad::weights(unsigned int num_pts, unsigned int index)
     return retval;
 }
 
-
+// Mesh Generation function (currently implements only hex)
 template<unsigned int dim>
 inline void Mesh<dim>::generate(Geometry<dim> geom)
 {
     switch (quadrature_type)
     {
+    // Store quadrature points
     case QuadratureType::two_point:
     {
         if (mesh_type == MeshType::hexahedral)
@@ -330,6 +345,7 @@ inline void Mesh<dim>::generate(Geometry<dim> geom)
     {
         if (mesh_type == MeshType::hexahedral)
         {
+            // Discretization points
             Nen = static_cast<unsigned int>(pow(2, dim));
             unsigned int Nnd_dim[dim];
             Nel = 1;  Nnd = 1;
@@ -342,6 +358,7 @@ inline void Mesh<dim>::generate(Geometry<dim> geom)
                 h_dim[idx] = geom.length[idx] / divs[idx];
             }
 
+            // Create nodal coordinates
             nodal_coords.reserve(Nnd);
             for (unsigned int kdx = 0; kdx < Nnd_dim[2]; ++kdx)
             {
@@ -358,6 +375,7 @@ inline void Mesh<dim>::generate(Geometry<dim> geom)
                 }
             }
 
+            // Create element connectivity
             elem_conn.reserve(Nel);
             for (unsigned int kdx = 0; kdx < divs[2]; ++kdx)
             {
@@ -379,6 +397,7 @@ inline void Mesh<dim>::generate(Geometry<dim> geom)
                 }
             }
 
+            // Store Shape Functions and their derivatives for all quad points
             N.resize(Nen, Nq);
             for (unsigned int idx = 0; idx < dim; ++idx)
                 dNdxi[idx].resize(Nen, Nq);
@@ -398,6 +417,7 @@ inline void Mesh<dim>::generate(Geometry<dim> geom)
     }
 }
 
+// Forms Elasticty Tensor C_IJKL from isotropic material parameter lambda and mu
 void Material::init_elasticity_tensor()
 {
     Eigen::Matrix3d del = Eigen::Matrix3d::Identity();
@@ -417,7 +437,7 @@ void Material::init_elasticity_tensor()
     }
 }
 
-
+// Printing Eigen::Matrix in a specified file
 void print_mat(Eigen::MatrixXd& A, std::string filename)
 {
     std::ofstream write_stream(filename.c_str());
