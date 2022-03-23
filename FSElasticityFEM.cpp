@@ -149,6 +149,7 @@ void FSElasticityFEM<dim>::post_print(std::string file)
         // raw_sol_print();
 
         // Write vtk file with mesh and solutions
+        std::cout << "*** Writing VTK file - " << file.c_str() << ".vtu\n";
         fem_to_vtk_vector(file, mesh.elem_conn, mesh.nodal_coords, d);
     }
 }
