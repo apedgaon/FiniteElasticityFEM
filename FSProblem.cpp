@@ -50,6 +50,13 @@ void Problem1()
                 temp.val = 0.0;
                 fem.dirBCs.push_back(temp);
             }
+            else if ((fabs(nd_coords[1] - 0.0) < 1.0e-8) && (fabs(nd_coords[2] - 3.0) < 1.0e-8))
+            {
+                temp.node = idx;
+                temp.dof = 1;
+                temp.val = 0.0;
+                fem.dirBCs.push_back(temp);
+            }
         }
         else if (fabs(nd_coords[0] - 10.0) < 1.0e-8)
         {
@@ -57,15 +64,6 @@ void Problem1()
             temp.node = idx;
             temp.dof = 0;
             temp.val = 1.0;     // cm
-            fem.dirBCs.push_back(temp);
-        }
-        
-        if ((fabs(nd_coords[2] - 3.0) < 1.0e-8))
-        {
-            DirichletBC temp;
-            temp.node = idx;
-            temp.dof = 1;
-            temp.val = 0.0;
             fem.dirBCs.push_back(temp);
         }
     }
