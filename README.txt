@@ -1,4 +1,7 @@
-This C++ code is dependent on Eigen 3.4.0 and will need it downloaded.
+This is C++ Finite Element code for solving 3D Finite Strain Elasticity. The material is assumed to be hyperelastic with
+St. Venant Kirchoff Model.
+
+This code is dependent on Eigen 3.4.0 which needs to be installed before building.
 	 https://eigen.tuxfamily.org/index.php?title=Main_Page
 
 A path to downloaded eigen directory should be provided to cmake. 
